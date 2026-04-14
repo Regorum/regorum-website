@@ -44,7 +44,7 @@ function Index() {
   return (
     <div className="relative min-h-screen bg-background text-foreground transition-colors duration-500">
       <AuroraBackground isDark={isDark} scrollProgress={scrollProgress} />
-      <ParticleCanvas isDark={isDark} />
+      <ParticleCanvas isDark={isDark} scrollProgress={scrollProgress} />
       <ScrollNav visible={navVisible} isDark={isDark} />
 
       {/* Hero */}
