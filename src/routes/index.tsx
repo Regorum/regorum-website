@@ -33,7 +33,7 @@ function Index() {
   useEffect(() => {
     const onScroll = () => {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = Math.min(1, window.scrollY / Math.max(1, maxScroll));
+      const progress = Math.min(1, window.scrollY / (window.innerHeight * 2));
       setScrollProgress(progress);
       setNavVisible(window.scrollY > window.innerHeight * 0.3);
     };
