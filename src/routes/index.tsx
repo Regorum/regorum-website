@@ -49,9 +49,12 @@ function Index() {
 
       {/* Hero */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6">
-        <h1 className="animate-float-up text-center font-display text-5xl font-bold tracking-normal text-foreground md:text-7xl lg:text-8xl px-4">
+        <h1
+          className="animate-float-up text-center font-display text-5xl font-bold tracking-wide text-foreground md:text-7xl lg:text-8xl px-8 overflow-visible"
+          style={{ textShadow: isDark ? '0 2px 20px rgba(0,0,0,0.5)' : '0 2px 20px rgba(255,255,255,0.8)' }}
+        >
           Regorum
-          <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent drop-shadow-none" style={{ textShadow: 'none' }}>
             Technologies
           </span>
         </h1>
