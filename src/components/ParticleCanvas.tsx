@@ -9,21 +9,36 @@ interface Particle {
   baseAlpha: number;
 }
 
-export function ParticleCanvas({ isDark }: { isDark: boolean }) {
+interface ParticleCanvasProps {
+  isDark: boolean;
+  scrollProgress: number;
+}
+
+export function ParticleCanvas({ isDark, scrollProgress }: ParticleCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const particlesRef = useRef<Particle[]>([]);
   const animRef = useRef<number>(0);
+  const scrollRef = useRef(scrollProgress);
+  scrollRef.current = scrollProgress;
 
   const initParticles = useCallback((w: number, h: number) => {
-    const count = Math.min(80, Math.floor((w * h) / 15000));
+    const count = Math.min(100, Math.floor((w * h) / 12000));
     const particles: Particle[] = [];
+    // Place particles within the cloud region (centered ellipse)
     for (let i = 0; i < count; i++) {
+      // Generate points within an ellipse centered at (50%, 40%) of the viewport
+      const angle = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(Math.random()); // sqrt for uniform distribution
+      const cx = w * 0.5;
+      const cy = h * 0.4;
+      const rx = w * 0.28; // horizontal radius of cloud
+      const ry = h * 0.22; // vertical radius of cloud
       particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        x: cx + Math.cos(angle) * r * rx,
+        y: cy + Math.sin(angle) * r * ry,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         radius: Math.random() * 2 + 1,
         baseAlpha: Math.random() * 0.5 + 0.3,
       });
@@ -63,6 +78,15 @@ export function ParticleCanvas({ isDark }: { isDark: boolean }) {
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
       const particles = particlesRef.current;
+      const sp = scrollRef.current;
+
+      // Cloud boundary (ellipse)
+      const cx = w * 0.5;
+      const cy = h * 0.4;
+      // Cloud radius scales with scroll (zoomed in = larger effective cloud on screen)
+      const cloudScale = 4 - sp * 3;
+      const rx = w * 0.28 * cloudScale;
+      const ry = h * 0.22 * cloudScale;
 
       const glowR = isDark ? 100 : 130;
       const glowG = isDark ? 220 : 160;
@@ -71,8 +95,23 @@ export function ParticleCanvas({ isDark }: { isDark: boolean }) {
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        // Keep particles within cloud ellipse by bouncing off the boundary
+        const dx = (p.x - cx) / rx;
+        const dy = (p.y - cy) / ry;
+        const dist = dx * dx + dy * dy;
+        if (dist > 1) {
+          // Reflect velocity inward
+          const nx = dx / Math.sqrt(dist);
+          const ny = dy / Math.sqrt(dist);
+          const dot = p.vx * nx + p.vy * ny;
+          p.vx -= 2 * dot * nx;
+          p.vy -= 2 * dot * ny;
+          // Push back inside
+          const scale = 0.98 / Math.sqrt(dist);
+          p.x = cx + (p.x - cx) * scale;
+          p.y = cy + (p.y - cy) * scale;
+        }
 
         const distToMouse = Math.hypot(p.x - mx, p.y - my);
         const isNearMouse = distToMouse < hoverDist;
@@ -101,11 +140,11 @@ export function ParticleCanvas({ isDark }: { isDark: boolean }) {
 
         for (let j = i + 1; j < particles.length; j++) {
           const b = particles[j];
-          const dist = Math.hypot(a.x - b.x, a.y - b.y);
-          if (dist < connectDist) {
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < connectDist) {
             const bDist = Math.hypot(b.x - mx, b.y - my);
             const nearness = Math.max(0, 1 - Math.min(aDist, bDist) / (hoverDist * 1.5));
-            const lineAlpha = (1 - dist / connectDist) * nearness * 0.6;
+            const lineAlpha = (1 - d / connectDist) * nearness * 0.6;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);

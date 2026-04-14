@@ -6,11 +6,14 @@ interface AuroraBackgroundProps {
 export function AuroraBackground({ isDark, scrollProgress }: AuroraBackgroundProps) {
   // Cloud zoom: starts very zoomed in (scale 4), zooms out to 1 as user scrolls
   const cloudScale = 4 - scrollProgress * 3;
-  const cloudOpacity = 0.15 + scrollProgress * 0.45;
+  const cloudOpacity = 0.2 + scrollProgress * 0.5;
+
+  // Aurora only visible in dark mode, fades in as scroll reveals the cloud edges
+  const auroraOpacity = isDark ? Math.min(1, scrollProgress * 1.5) * 0.35 : 0;
 
   return (
     <div className="fixed inset-0" style={{ zIndex: 0 }}>
-      {/* Base gradient */}
+      {/* Base background */}
       <div
         className="absolute inset-0 transition-colors duration-700"
         style={{
@@ -20,7 +23,7 @@ export function AuroraBackground({ isDark, scrollProgress }: AuroraBackgroundPro
         }}
       />
 
-      {/* Digital cloud layer */}
+      {/* Digital cloud layer - central mass */}
       <div
         className="absolute inset-0 transition-opacity duration-500"
         style={{
@@ -28,59 +31,75 @@ export function AuroraBackground({ isDark, scrollProgress }: AuroraBackgroundPro
           transform: `scale(${cloudScale})`,
           transformOrigin: "50% 40%",
           background: isDark
-            ? `radial-gradient(ellipse 60% 45% at 50% 45%, oklch(0.25 0.05 260 / 80%), transparent),
-               radial-gradient(ellipse 40% 30% at 45% 50%, oklch(0.22 0.04 250 / 60%), transparent),
-               radial-gradient(ellipse 35% 25% at 55% 40%, oklch(0.2 0.06 270 / 50%), transparent)`
-            : `radial-gradient(ellipse 60% 45% at 50% 45%, oklch(0.9 0.02 220 / 80%), transparent),
-               radial-gradient(ellipse 40% 30% at 45% 50%, oklch(0.88 0.025 230 / 60%), transparent),
-               radial-gradient(ellipse 35% 25% at 55% 40%, oklch(0.92 0.015 210 / 50%), transparent)`,
+            ? `radial-gradient(ellipse 55% 40% at 50% 45%, oklch(0.22 0.05 260 / 90%), oklch(0.18 0.04 260 / 40%), transparent 70%),
+               radial-gradient(ellipse 35% 28% at 45% 48%, oklch(0.2 0.04 250 / 70%), transparent 65%),
+               radial-gradient(ellipse 30% 22% at 58% 42%, oklch(0.19 0.06 270 / 55%), transparent 60%)`
+            : `radial-gradient(ellipse 55% 40% at 50% 45%, oklch(0.88 0.025 220 / 90%), oklch(0.92 0.015 220 / 40%), transparent 70%),
+               radial-gradient(ellipse 35% 28% at 45% 48%, oklch(0.86 0.03 230 / 70%), transparent 65%),
+               radial-gradient(ellipse 30% 22% at 58% 42%, oklch(0.9 0.02 210 / 55%), transparent 60%)`,
         }}
       />
 
-      {/* Aurora effects */}
+      {/* Aurora lights - ONLY in dark mode, positioned OUTSIDE the cloud */}
+      {/* Top-left green aurora */}
       <div
         className="absolute animate-aurora-1"
         style={{
-          top: "-20%",
-          left: "-10%",
-          width: "120%",
-          height: "60%",
-          opacity: isDark ? 0.25 : 0.12,
-          background: isDark
-            ? "radial-gradient(ellipse 80% 50% at 40% 60%, oklch(0.5 0.2 150 / 60%), oklch(0.45 0.18 170 / 30%), transparent)"
-            : "radial-gradient(ellipse 80% 50% at 40% 60%, oklch(0.6 0.15 200 / 40%), oklch(0.65 0.12 250 / 20%), transparent)",
-          filter: "blur(60px)",
+          top: "-25%",
+          left: "-20%",
+          width: "70%",
+          height: "65%",
+          opacity: auroraOpacity,
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 70%, oklch(0.45 0.2 150 / 50%), oklch(0.4 0.18 160 / 25%), transparent)",
+          filter: "blur(80px)",
         }}
       />
+
+      {/* Top-right blue aurora */}
       <div
         className="absolute animate-aurora-2"
         style={{
-          top: "-10%",
-          right: "-15%",
-          width: "100%",
-          height: "50%",
-          opacity: isDark ? 0.2 : 0.1,
-          background: isDark
-            ? "radial-gradient(ellipse 70% 40% at 60% 50%, oklch(0.55 0.22 140 / 50%), oklch(0.5 0.2 160 / 25%), transparent)"
-            : "radial-gradient(ellipse 70% 40% at 60% 50%, oklch(0.55 0.18 175 / 30%), oklch(0.6 0.12 220 / 15%), transparent)",
-          filter: "blur(70px)",
+          top: "-20%",
+          right: "-25%",
+          width: "65%",
+          height: "60%",
+          opacity: auroraOpacity * 0.85,
+          background:
+            "radial-gradient(ellipse 75% 55% at 50% 65%, oklch(0.5 0.18 240 / 45%), oklch(0.45 0.15 260 / 20%), transparent)",
+          filter: "blur(75px)",
         }}
       />
 
-      {/* Bottom aurora glow */}
+      {/* Bottom-left blue aurora */}
+      <div
+        className="absolute animate-aurora-2"
+        style={{
+          bottom: "-20%",
+          left: "-15%",
+          width: "60%",
+          height: "55%",
+          opacity: auroraOpacity * 0.7,
+          background:
+            "radial-gradient(ellipse 85% 65% at 55% 35%, oklch(0.48 0.16 230 / 40%), oklch(0.42 0.14 250 / 18%), transparent)",
+          filter: "blur(90px)",
+          animationDelay: "-5s",
+        }}
+      />
+
+      {/* Bottom-right green aurora */}
       <div
         className="absolute animate-aurora-1"
         style={{
-          bottom: "-15%",
-          left: "-5%",
-          width: "110%",
-          height: "40%",
-          opacity: isDark ? 0.15 : 0.08,
-          background: isDark
-            ? "radial-gradient(ellipse 90% 60% at 50% 30%, oklch(0.45 0.18 155 / 40%), transparent)"
-            : "radial-gradient(ellipse 90% 60% at 50% 30%, oklch(0.6 0.12 200 / 25%), transparent)",
-          filter: "blur(80px)",
-          animationDelay: "-8s",
+          bottom: "-25%",
+          right: "-20%",
+          width: "65%",
+          height: "55%",
+          opacity: auroraOpacity * 0.6,
+          background:
+            "radial-gradient(ellipse 80% 60% at 45% 30%, oklch(0.42 0.19 145 / 35%), oklch(0.38 0.16 165 / 15%), transparent)",
+          filter: "blur(85px)",
+          animationDelay: "-12s",
         }}
       />
     </div>
