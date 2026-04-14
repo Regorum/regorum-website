@@ -49,13 +49,13 @@ function Index() {
 
       {/* Hero */}
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6">
-        <h1 className="animate-float-up text-center font-display text-5xl font-bold tracking-tight text-foreground md:text-7xl lg:text-8xl">
+        <h1 className="animate-float-up text-center font-display text-5xl font-bold tracking-normal text-foreground md:text-7xl lg:text-8xl px-4">
           Regorum
           <span className="block bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Technologies
           </span>
         </h1>
-        <div className="mt-8 animate-float-up" style={{ animationDelay: "0.3s" }}>
+        <div className="mt-16 animate-float-up" style={{ animationDelay: "0.3s" }}>
           <DarkModeToggle isDark={isDark} onToggle={toggleDark} />
         </div>
       </section>
