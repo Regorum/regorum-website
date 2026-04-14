@@ -95,13 +95,13 @@ export function ContactSection() {
                   <span className="text-sm font-medium">+91 7219510036</span>
                 </a>
                 <a
-                  href="mailto:regorumgroup@gmail.com"
+                  href="mailto:sales@regorum.com"
                   className="flex items-center gap-4 text-muted-foreground transition-colors hover:text-primary group"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
                     <Mail size={18} />
                   </span>
-                  <span className="text-sm font-medium">regorumgroup@gmail.com</span>
+                  <span className="text-sm font-medium">sales@regorum.com</span>
                 </a>
               </div>
             </div>
